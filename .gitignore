@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.csproj.user
+*.dbmdl
+*.bak
+
+# Build
+bin/
+obj/
+
+# Visual Studio Code
+.vscode/
+
+# Otros
+*.log

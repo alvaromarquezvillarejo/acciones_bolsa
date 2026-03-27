@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Tracker — Análisis Técnico</title>
+
+  <!-- Tailwind CSS vía CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            surface: "#0f172a",
+            card: "#1e293b",
+            accent: "#38bdf8",
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Apache ECharts vía CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+
+  <style>
+    /* Scroll suave global */
+    html { scroll-behavior: smooth; }
+    /* Ocultar scrollbar en el body pero mantener scroll */
+    body { scrollbar-width: thin; scrollbar-color: #334155 #0f172a; }
+    body::-webkit-scrollbar { width: 8px; }
+    body::-webkit-scrollbar-track { background: #0f172a; }
+    body::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+
+<body class="bg-surface text-slate-200 min-h-screen flex flex-col">
+
+  <!-- ─── Header ─── -->
+  <header class="bg-card border-b border-slate-700 px-6 py-4 flex items-center gap-4 shadow-lg">
+    <div class="flex items-center gap-3">
+      <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+      <h1 class="text-2xl font-bold tracking-tight text-white">
+        Stock <span class="text-accent">Tracker</span>
+      </h1>
+    </div>
+    <span class="hidden sm:inline text-sm text-slate-400 ml-4">Análisis técnico en tiempo real</span>
+  </header>
+
+  <!-- ─── Contenido principal ─── -->
+  <main class="flex-1 flex flex-col lg:flex-row gap-0">
+
+    <!-- ─── Panel de control (sidebar) ─── -->
+    <aside class="lg:w-80 w-full bg-card border-b lg:border-b-0 lg:border-r border-slate-700 p-6 flex flex-col gap-5 shrink-0">
+      <h2 class="text-lg font-semibold text-slate-100">Panel de Control</h2>
+
+      <!-- Ticker -->
+      <div>
+        <label for="ticker" class="block text-sm font-medium text-slate-400 mb-1">Ticker</label>
+        <input
+          id="ticker"
+          type="text"
+          placeholder="Ej: AAPL, MSFT, TSLA"
+          class="w-full bg-surface border border-slate-600 rounded-lg px-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+        />
+      </div>
+
+      <!-- Fecha inicio -->
+      <div>
+        <label for="start-date" class="block text-sm font-medium text-slate-400 mb-1">Fecha Inicio</label>
+        <input
+          id="start-date"
+          type="date"
+          class="w-full bg-surface border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+        />
+      </div>
+
+      <!-- Fecha fin -->
+      <div>
+        <label for="end-date" class="block text-sm font-medium text-slate-400 mb-1">Fecha Fin</label>
+        <input
+          id="end-date"
+          type="date"
+          class="w-full bg-surface border border-slate-600 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition"
+        />
+      </div>
+
+      <!-- Botón Analizar -->
+      <button
+        id="btn-analyze"
+        class="w-full bg-accent hover:bg-sky-400 text-slate-900 font-bold py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Analizar
+      </button>
+
+      <!-- Indicador de carga -->
+      <div id="loading" class="hidden text-center text-sm text-slate-400">
+        <svg class="animate-spin h-5 w-5 mx-auto mb-1 text-accent" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        Obteniendo datos…
+      </div>
+
+      <!-- Mensaje de error -->
+      <div id="error-msg" class="hidden bg-red-900/40 border border-red-700 text-red-300 text-sm rounded-lg p-3"></div>
+
+      <!-- Historial de tickers analizados -->
+      <div class="mt-auto">
+        <h3 class="text-xs uppercase tracking-wider text-slate-500 mb-2">Tickers cargados</h3>
+        <ul id="ticker-list" class="space-y-1 text-sm text-slate-400 max-h-48 overflow-y-auto">
+          <li class="italic text-slate-600">Ninguno aún</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ─── Área de gráficos ─── -->
+    <section id="charts-area" class="flex-1 p-6 space-y-6 overflow-y-auto">
+      <!-- Mensaje inicial cuando no hay gráficos -->
+      <div id="empty-state" class="flex flex-col items-center justify-center h-full text-slate-500 gap-4">
+        <svg class="w-20 h-20 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+        <p class="text-lg">Introduce un ticker y pulsa <strong class="text-accent">Analizar</strong> para empezar</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── Script principal ─── -->
+  <script src="app.js"></script>
+</body>
+</html>
