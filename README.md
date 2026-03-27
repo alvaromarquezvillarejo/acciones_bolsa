@@ -41,7 +41,7 @@ GET	/api/indicators/{symbol}	Calcula indicadores técnicos
 # ▶️ Cómo ejecutar el proyecto
 
 1. Clonar repositorio
-git clone https://github.com/TU_USUARIO/acciones_bolsa.git
+git clone https://github.com/alvaromarquezvillarejo/acciones_bolsa.git
 cd acciones_bolsa
 
 2. Crear entorno virtual
@@ -102,5 +102,6 @@ Dockerización
 
 Álvaro Márquez-Villarejo Condés
 
-https://www.linkedin.com/in/alvaromarquezvillarejo
-https://github.com/alvaromarquezvillarejo
+- LinkedIn: https://www.linkedin.com/in/alvaromarquezvillarejo
+- Github: https://github.com/alvaromarquezvillarejo
+ 
