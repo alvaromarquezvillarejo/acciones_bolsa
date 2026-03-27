@@ -66,7 +66,7 @@ FastAPI genera documentación automática:
 
 👉 http://127.0.0.1:8000/docs
 
-📷 Preview
+# 📷 Preview
 
 (screenshot)
 
@@ -101,5 +101,6 @@ Dockerización
 # 👨‍💻 Autor
 
 Álvaro Márquez-Villarejo Condés
+
 https://www.linkedin.com/in/alvaromarquezvillarejo
 https://github.com/alvaromarquezvillarejo
